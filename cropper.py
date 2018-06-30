@@ -53,12 +53,14 @@ def chgImg(event):
         global ratio
         ratio = 1
         loadImg()
+        drawBox(None)
     elif event.char == 'z':
         currImage
         currImage -= 1 if currImage > 0 else 0
         curr = Image.open(INPUT_DIR + '/' + imgs[currImage])
         ratio = 1
         loadImg()
+        drawBox(None)
 
 
 def loadImg():
