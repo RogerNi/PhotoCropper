@@ -10,6 +10,13 @@ This is an application for cropping image. You can process many images easily wi
 |Capture current image|Mouse left click|
 |Next image|Space|
 |Previous image|Z|
+## Some perameters need to specify (examples)
+`INPUT_DIR = '/home/mars/Documents/Input'
+OUTPUT_DIR = '/home/mars/Documents/Test_Output'    # Directory will be created if not found
+ZOOM_RATIO = 1.08
+WINDOW_WIDTH = 1024
+WINDOW_HEIGHT = 768
+CROP_SIZE = (122, 122)`
 ## Snapshots
 |   |   |
 |---|---|
