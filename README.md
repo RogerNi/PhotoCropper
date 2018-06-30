@@ -6,3 +6,4 @@ This is an application for cropping image. You can process many images easily wi
 ![Snapshot 2](/snapshots/Screenshot_2.png)
 ![Snapshot 3](/snapshots/Screenshot_3.png)
 ![Snapshot 4](/snapshots/Screenshot_4.png)
+<img style="float: left;" src="/snapshots/Screenshot_1.png">
