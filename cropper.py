@@ -79,6 +79,7 @@ def zoom(r):
     new_h = round(ratio * h)
     curr = curr.resize((new_w, new_h))
     loadImg()
+    drawBox(None)
 
 
 def winZoom(event):
@@ -144,7 +145,7 @@ panel = tk.Label(master)
 panel.pack(side="bottom", fill="both", expand="yes")
 panel.place(x=x_position, y=y_position, anchor=tk.CENTER)
 loadImg()
-zoom(1)
+#zoom(1)
 
 canvas = tk.Canvas(master, width=CROP_SIZE[0], height=CROP_SIZE[1])
 canvas.create_rectangle(0, 0, CROP_SIZE[0], CROP_SIZE[1], width=5)
