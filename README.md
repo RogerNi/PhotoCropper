@@ -10,6 +10,16 @@ This is an application for cropping image. You can process many images easily wi
 |Capture current image|Mouse left click|
 |Next image|Space|
 |Previous image|Z|
+|Open Output folder|X|
+|Open Input folder|S|
+|Show current image number|D|
+|Change to another image|F|
+|Turn on/off Gaussian Blur|G|
+|Reduce blur radius|,|
+|Increase blur radius|.|
+|Reset blur radius to 1|/|
+|Reset zoom ratio|R|
+|Change Output path|C|
 ## Some perameters need to specify (examples)
 ~~~~
 INPUT_DIR = '/home/mars/Documents/Input'
