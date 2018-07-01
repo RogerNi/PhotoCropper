@@ -8,15 +8,18 @@
 import os
 import platform
 import tkinter as tk
+import subprocess
 
-from PIL import ImageTk, Image
+from PIL import ImageTk, Image, ImageFilter
 
 # This part of parameters can be changed
-INPUT_DIR = '/home/mars/Documents/data/negative'
+INPUT_DIR = '/home/mars/Documents/GoogleImagesDownloader-master/data/arms'
 OUTPUT_DIR = '/home/mars/Documents/Test_Output'    # Directory will be created if not found
 ZOOM_RATIO = 1.08
 WINDOW_WIDTH = 1024
 WINDOW_HEIGHT = 768
+BLUR = True
+BLUR_RADIUS = 2
 CROP_SIZE = (122, 122)
 
 
@@ -39,16 +42,18 @@ y_position = WINDOW_HEIGHT / 2
 # print(y_position)
 
 global curr, cropped
+currOrigin = Image.open(INPUT_DIR + '/' + imgs[currImage])
 curr = Image.open(INPUT_DIR + '/' + imgs[currImage])
 cropped = curr.crop((0, 0, CROP_SIZE[0], CROP_SIZE[1]))
 maxImage = len(imgs)
 
 
-def chgImg(event):
+def key(event):
     if event.char == ' ':
         global currImage
         currImage += 1 if currImage + 1 < maxImage else 0
-        global curr
+        global curr, currOrigin
+        currOrigin = Image.open(INPUT_DIR + '/' + imgs[currImage])
         curr = Image.open(INPUT_DIR + '/' + imgs[currImage])
         global ratio
         ratio = 1
@@ -57,11 +62,68 @@ def chgImg(event):
     elif event.char == 'z':
         currImage
         currImage -= 1 if currImage > 0 else 0
+        currOrigin = Image.open(INPUT_DIR + '/' + imgs[currImage])
         curr = Image.open(INPUT_DIR + '/' + imgs[currImage])
         ratio = 1
         loadImg()
         drawBox(None)
+    elif event.char == 'g':
+        global BLUR
+        BLUR = not BLUR
+        if BLUR:
+            print("Gaussian Blur ON")
+        else:
+            print("Gaussian Blur OFF")OUTPUT_DIR
+    elif event.char == ',':
+        global BLUR_RADIUS
+        if BLUR_RADIUS > 1:
+            BLUR_RADIUS -= 1
+            drawBox(None)
+            print("Blur radius set to "+str(BLUR_RADIUS))
+        else:
+            print("Blur radius is 1. Cannot reduce.")
+    elif event.char == '.':
+        BLUR_RADIUS += 1
+        drawBox(None)
+        print("Blur radius set to "+str(BLUR_RADIUS))
+    elif event.char == '/':
+        BLUR_RADIUS = 1
+        drawBox(None)
+        print("Blur radius reset to 1")
+    elif event.char == 'd':
+        print("Current image is #"+str(currImage))
+    elif event.char == 'f':
+        currImage = int(input("Which image you want?\n"))
+        currOrigin = Image.open(INPUT_DIR + '/' + imgs[currImage])
+        curr = Image.open(INPUT_DIR + '/' + imgs[currImage])
+        ratio = 1
+        loadImg()
+        drawBox(None)
+        print("Image change to #"+str(currImage))
+    elif event.char == 'r':
+        ratio = 1
+        curr = currOrigin
+        loadImg()
+        drawBox(None)
+        print("Ratio reset")
+    elif event.char == 'x':
+        openDir(OUTPUT_DIR)
+    elif event.char == 's':
+        openDir(INPUT_DIR)
+    elif event.char == 'c':
+        global OUTPUT_DIR
+        OUTPUT_DIR = input("Input new input dir:\n")
+        if not os.path.isdir(OUTPUT_DIR):
+            os.mkdir(OUTPUT_DIR)
+        print("Output dir changed to "+OUTPUT_DIR)
 
+def openDir(path):
+    if OS == "Linux":
+        subprocess.Popen("gio open "+path, shell=True)
+    elif OS == "Windows":
+        subprocess.Popen("start "+path, shell=True)
+    else:
+        subprocess.Popen("open "+path, shell=True)
 
 def loadImg():
     img = ImageTk.PhotoImage(curr)
@@ -73,7 +135,7 @@ def zoom(r):
     global ratio
     ratio *= r
     global curr
-    curr = Image.open(INPUT_DIR + '/' + imgs[currImage])
+    curr = currOrigin
     w, h = curr.size
     new_w = round(ratio * w)
     new_h = round(ratio * h)
@@ -128,6 +190,8 @@ def drawBox(event):
     global cropped, canvas
     cropped = curr.crop((x1 - CROP_SIZE[0] / 2, y1 - CROP_SIZE[1] / 2, x1 + CROP_SIZE[0] / 2, y1 + CROP_SIZE[1] / 2))
     temp_crop = ImageTk.PhotoImage(cropped)
+    if BLUR:
+        temp_crop = ImageTk.PhotoImage(cropped.filter(ImageFilter.GaussianBlur(BLUR_RADIUS)))
     canvas.create_image((0, 0), image=temp_crop, anchor=tk.NW)
     canvas.image = temp_crop
     canvas.create_rectangle(0, 0, CROP_SIZE[0], CROP_SIZE[1], width=5)
@@ -137,7 +201,10 @@ def drawBox(event):
 def capture(event):
     file = imgs[currImage] + "_" + "r_" + str(ratio) + "(" + str(master.winfo_pointerx()) + ", " + str(
         master.winfo_pointery()) + ").jpg"
-    cropped.save(OUTPUT_DIR + "/" + file)
+    if BLUR:
+        cropped.filter(ImageFilter.GaussianBlur(BLUR_RADIUS)).save(OUTPUT_DIR + "/" + file)
+    else:
+        cropped.save(OUTPUT_DIR + "/" + file)
     print("File saved: " + file)
 
 
@@ -145,7 +212,7 @@ panel = tk.Label(master)
 panel.pack(side="bottom", fill="both", expand="yes")
 panel.place(x=x_position, y=y_position, anchor=tk.CENTER)
 loadImg()
-#zoom(1)
+# zoom(1)
 
 canvas = tk.Canvas(master, width=CROP_SIZE[0], height=CROP_SIZE[1])
 canvas.create_rectangle(0, 0, CROP_SIZE[0], CROP_SIZE[1], width=5)
@@ -153,13 +220,14 @@ temp_crop = ImageTk.PhotoImage(cropped)
 canimg = canvas.create_image((0, 0), image=temp_crop, anchor=tk.NW)
 canvas.image = temp_crop
 
-master.bind('<Key>', chgImg)
+master.bind('<Key>', key)
 master.bind("<B3-Motion>", drag)
 master.bind("<Button-1>", capture)
 master.bind('<Button-3>', b3)
 master.bind('<Motion>', drawBox)
-print("OS: " + platform.system())
-if platform.system() != "Linux":
+OS = platform.system()
+print("OS: " + OS)
+if OS != "Linux":
     master.bind('<MouseWheel>', winZoom)
 else:
     master.bind('<Button-4>', zoomIn)
