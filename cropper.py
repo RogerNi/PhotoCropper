@@ -73,7 +73,7 @@ def key(event):
         if BLUR:
             print("Gaussian Blur ON")
         else:
-            print("Gaussian Blur OFF")OUTPUT_DIR
+            print("Gaussian Blur OFF")
     elif event.char == ',':
         global BLUR_RADIUS
         if BLUR_RADIUS > 1:
@@ -107,11 +107,11 @@ def key(event):
         drawBox(None)
         print("Ratio reset")
     elif event.char == 'x':
+        global OUTPUT_DIR
         openDir(OUTPUT_DIR)
     elif event.char == 's':
         openDir(INPUT_DIR)
     elif event.char == 'c':
-        global OUTPUT_DIR
         OUTPUT_DIR = input("Input new input dir:\n")
         if not os.path.isdir(OUTPUT_DIR):
             os.mkdir(OUTPUT_DIR)
