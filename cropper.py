@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # @Time    : 2018/6/30
 # @Author  : NI
@@ -13,9 +12,9 @@ import subprocess
 from PIL import ImageTk, Image, ImageFilter
 
 # This part of parameters can be changed
-INPUT_DIR = '/home/mars/Documents/GoogleImagesDownloader-master/data/arms'
-OUTPUT_DIR = '/home/mars/Documents/Test_Output'    # Directory will be created if not found
-ZOOM_RATIO = 1.08
+INPUT_DIR = 'C:\\Users\\niron\\Pictures\\temp'
+OUTPUT_DIR = 'C:\\Users\\niron\\Pictures\\temp_out'    # Directory will be created if not found
+ZOOM_RATIO = 1.2
 WINDOW_WIDTH = 1024
 WINDOW_HEIGHT = 768
 BLUR = True
@@ -74,6 +73,7 @@ def key(event):
             print("Gaussian Blur ON")
         else:
             print("Gaussian Blur OFF")
+        drawBox(None)
     elif event.char == ',':
         global BLUR_RADIUS
         if BLUR_RADIUS > 1:
@@ -145,7 +145,10 @@ def zoom(r):
 
 
 def winZoom(event):
-    zoom(ratio * (event.delta / 120))
+    if event.delta > 0:
+        zoom(ZOOM_RATIO)
+    else:
+        zoom(1/ZOOM_RATIO)
 
 
 def zoomIn(event):
